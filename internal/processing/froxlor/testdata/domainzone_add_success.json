@@ -1,0 +1,8 @@
+{
+  "status": 200,
+  "status_message": "successful",
+  "data": [
+    "$TTL 604800",
+    ""
+  ]
+}

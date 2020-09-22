@@ -1,0 +1,5 @@
+{
+  "status": 404,
+  "status_message": "Subdomain with domain name 'foo.bar' could not be found",
+  "data": null
+}

@@ -41,20 +41,26 @@ func listenCancel(cancel context.CancelFunc) {
 // given processor not validating for any errors. The domains will be continuously fetched and forwarded until
 // the context gets cancelled.
 func workDomains(ctx context.Context, processor processor, provider provider, c clock) {
-	log.Info("Listening for domains...")
+	log.Info("Started listening for domains...")
 	for {
 		select {
 			case <-c.Ticker():
-				log.Info("Querying for domains...")
-				domains := provider.GetDomains()
-				log.Infof("Done querying for domains. Received %v unique domains.", len(domains))
-				processor.Process(domains)
-			case <- ctx.Done():
-				log.Info("Stopped listening for domains.")
-				return
+				processDomains(provider, processor)
+		case <-ctx.Done():
+			log.Info("Stopped listening for domains.")
+			return
 		}
 	}
 }
+
+func processDomains(provider provider, processor processor) {
+	log.Info("Querying for domains...")
+	domains := provider.GetDomains()
+	log.Infof("Done querying for domains. Received %v unique domains.", len(domains))
+	processor.Process(domains)
+}
+
+
 
 
 func loadConfig() config {
@@ -72,7 +78,10 @@ func loadConfig() config {
 func getProcessor(cfg config) processor {
 	processor := processing.Repository().GetProcessor(cfg.Processor)
 	if processor == nil {
-		log.Panicf("Failed looking up processor with id '%v'", cfg.Processor)
+		log.Panicf("failed looking up processor with id '%v'", cfg.Processor)
+	}
+	if err := processor.Init(); err != nil {
+		log.Panicf("failed to initialize processor with ID '%v' due to error: %v", cfg.Processor, err)
 	}
 	return processor
 }

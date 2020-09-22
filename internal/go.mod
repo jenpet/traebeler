@@ -3,6 +3,7 @@ module github.com/jenpet/traebeler
 go 1.13
 
 require (
+	github.com/bobesa/go-domain-util v0.0.0-20190911083921-4033b5f7dd89
 	github.com/containous/traefik/v2 v2.2.8
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/sirupsen/logrus v1.4.2
