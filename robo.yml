@@ -1,8 +1,12 @@
 build:
   command: |
-    pushd {{ .codeDir }} >/dev/null
+    cd {{ .codeDir }}
     go build -o {{ .robo.path }}/{{ .binary }} ./cmd/traebeler
-    popd >/dev/null
+
+test:
+  command: |
+    cd {{ .codeDir }}
+    go test ./... -cover
 
 run:
   command: |
@@ -10,11 +14,6 @@ run:
     robo -c {{ .robo.file }} build && \
     ./{{ .binary }}
 
-test:
-  command: |
-    pushd {{ .codeDir }} >/dev/null
-    go test ./... -cover
-    popd >/dev/null
 
 variables:
   project: github.com/jenpet/traebeler

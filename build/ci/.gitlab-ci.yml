@@ -1,0 +1,18 @@
+image: golang:1.14
+
+before_script:
+  - curl -sf https://gobinaries.com/tj/robo | sh
+
+stages:
+  - test
+  - build
+
+test traebeler:
+  stage: test
+  script:
+    - robo test
+
+build traebeler:
+  stage: build
+  script:
+    - robo build
