@@ -1,0 +1,29 @@
+#!/bin/bash
+if [ -z ${CURRENT_VERSION} ]; then
+  echo "Missing 'CURENT_VERSION' parameter.";
+  exit 1;
+fi;
+
+semver_bump() {
+  SLUG=$1
+  IFS='.' read -ra SLUGS <<< "${CURRENT_VERSION}"
+  # bump the requested position and set the following ones to zero (0)
+  ((SLUGS[${SLUG}]++))
+  for I in "${SLUGS[@]}"
+  do
+    if [ "${I}" -gt "${SLUG}" ]; then
+        SLUGS[${I}]=0
+    fi
+  done
+  BUMPED_VERSION=$( IFS=$'.'; echo "${SLUGS[*]}" )
+  echo ${BUMPED_VERSION}
+}
+
+bump() {
+  case $1 in
+    major) semver_bump 0;;
+    minor) semver_bump 1;;
+    patch) semver_bump 2;;
+    *) echo "invalid bump part"; exit 1
+  esac
+}

@@ -34,9 +34,20 @@ publish-code:
     git push github HEAD:master
     git push github --tags
 
+release:
+  summary: bumps the version file and tags the
+  script: scripts/release
+  env:
+    - SEMVER_BUMP_LIB=scripts/bump
+    - CURRENT_VERSION={{ .version }}
+    - VERSION_FILE={{ .versionFile }}
+    - TAG_MESSAGE=TRAEBELER release
+
+
 variables:
   project: github.com/jenpet/traebeler
   image: jenpet/traebeler
   binary: build/dist/traebeler
   codeDir: ./internal
-  version: $(cat build/version)
+  version: $(cat {{ .versionFile }})
+  versionFile: build/version
