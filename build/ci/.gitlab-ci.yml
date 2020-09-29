@@ -1,18 +1,30 @@
-image: golang:1.14
-
-before_script:
-  - curl -sf https://gobinaries.com/tj/robo | sh
-
 stages:
   - test
   - build
+  - publish
 
 test traebeler:
+  image: golang:1.14
+  before_script: 
+    - curl -sf https://gobinaries.com/tj/robo | sh
   stage: test
   script:
     - robo test
 
-build traebeler:
+build traebeler image:
   stage: build
+  image: docker:dind
+  before_script:
+    - apk add curl
+    - curl -sf https://gobinaries.com/tj/robo | sh
   script:
-    - robo build
+    - robo image
+
+publish traebeler:
+  stage: publish
+  image: docker:dind
+  before_script:
+    - apk add curl
+    - curl -sf https://gobinaries.com/tj/robo | sh
+  script:
+    - robo publish

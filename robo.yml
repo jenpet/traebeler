@@ -1,21 +1,34 @@
 build:
+  summary: builds traebeler and puts the binary
   command: |
     cd {{ .codeDir }}
     go build -o {{ .robo.path }}/{{ .binary }} ./cmd/traebeler
 
 test:
+  summary: runs all tests with coverage
   command: |
     cd {{ .codeDir }}
     go test ./... -cover
 
 run:
+  summary: first builds then runs traebeler
   command: |
-    source .env
     robo -c {{ .robo.file }} build && \
     ./{{ .binary }}
 
+image:
+  summary: builds a docker image
+  command: docker build -f build/Dockerfile -t {{ .image }}:{{ .version }} .
+
+publish:
+  summary: publishes the image to the docker registry
+  command: |
+    docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
+    docker push {{ .image }}:{{ .version }}
 
 variables:
   project: github.com/jenpet/traebeler
+  image: jenpet/traebeler
   binary: build/dist/traebeler
   codeDir: ./internal
+  version: $(cat build/version)
