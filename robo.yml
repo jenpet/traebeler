@@ -20,11 +20,19 @@ image:
   summary: builds a docker image
   command: docker build -f build/Dockerfile -t {{ .image }}:{{ .version }} .
 
-publish:
+publish-image:
   summary: publishes the image to the docker registry
   command: |
     docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
     docker push {{ .image }}:{{ .version }}
+
+publish-code:
+  summary: publishes the code base to GitHub
+  command: |
+    git remote add github https://${GITHUB_USERNAME}:${GITHUB_PASSWORD}@github.com/jenpet/traebeler.git > /dev/null 2>&1
+    set -e
+    git push github HEAD:master
+    git push github --tags
 
 variables:
   project: github.com/jenpet/traebeler
