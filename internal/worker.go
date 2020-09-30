@@ -37,15 +37,20 @@ func listenCancel(cancel context.CancelFunc) {
 	}()
 }
 
-// workDomains queries traefik every time the clock's ticker fires. The retrieved domains are passed to the
-// given processor not validating for any errors. The domains will be continuously fetched and forwarded until
-// the context gets cancelled.
+// workDomains initially queries traefik for a first set of domains. The retrieved domains are passed to the
+// given processor _not_ validating for any errors. Subsequently it will query traefik every time the clock's ticker fires.
+// The domains will be continuously fetched and forwarded until the context gets cancelled.
 func workDomains(ctx context.Context, processor processor, provider provider, c clock) {
 	log.Info("Started listening for domains...")
+	processDomains(provider, processor)
+	processDomainsOnTrigger(ctx, processor, provider, c)
+}
+
+func processDomainsOnTrigger(ctx context.Context, processor processor, provider provider, c clock) {
 	for {
 		select {
-			case <-c.Ticker():
-				processDomains(provider, processor)
+		case <-c.Ticker():
+			processDomains(provider, processor)
 		case <-ctx.Done():
 			log.Info("Stopped listening for domains.")
 			return
@@ -53,6 +58,7 @@ func workDomains(ctx context.Context, processor processor, provider provider, c 
 	}
 }
 
+// processDomains retrieves a list of domains from the given provider and forwards it to the processor.
 func processDomains(provider provider, processor processor) {
 	log.Info("Querying for domains...")
 	domains := provider.GetDomains()

@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func TestListenDomains_whenClockFires_shouldQueryDomainsAndTriggerProcessor(t *testing.T) {
+func TestProcessDomainsOnTrigger_whenClockFires_shouldQueryDomainsAndTriggerProcessor(t *testing.T) {
 	tc := mockClock{}
 	sProvider := staticProvider{"lospolloshermanos.com", "api.lospolloshermanos.com", "www.lospolloshermanos.com"}
 
@@ -16,7 +16,7 @@ func TestListenDomains_whenClockFires_shouldQueryDomainsAndTriggerProcessor(t *t
 	aProcessor := assertingProcessor{ t: t, expectedLen: 3, called: called}
 
 	go func() {
-		workDomains(ctx, &aProcessor, sProvider, &tc)
+		processDomainsOnTrigger(ctx, &aProcessor, sProvider, &tc)
 	}()
 
 	tc.Trigger()
