@@ -1,5 +1,9 @@
 image: golang:1.14
 
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+
 before_script: 
   - curl -sf https://gobinaries.com/tj/robo | sh
 
@@ -12,6 +16,7 @@ test traebeler:
   stage: test
   script:
     - robo test
+    - robo build
 
 build traebeler image:
   stage: build
@@ -21,11 +26,17 @@ build traebeler image:
     - curl -sf https://gobinaries.com/tj/robo | sh
   script:
     - robo image
+  rules:
+    - changes:
+      - internal/**
+      - build/Dockerfile
+      - build/version
 
 publish traebeler code:
   stage: publish
   script:
     - robo publish-code
+
 publish traebeler image:
   stage: publish
   image: docker:dind
@@ -34,3 +45,8 @@ publish traebeler image:
     - curl -sf https://gobinaries.com/tj/robo | sh
   script:
     - robo publish-image
+  rules:
+    - changes:
+      - internal/**
+      - build/Dockerfile
+      - build/version

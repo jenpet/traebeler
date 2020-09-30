@@ -35,7 +35,7 @@ publish-code:
     git push github --tags
 
 release:
-  summary: bumps the version file and tags the
+  summary: bumps the version file, commits it and tags the commit accordingly
   script: scripts/release
   env:
     - SEMVER_BUMP_LIB=scripts/bump
