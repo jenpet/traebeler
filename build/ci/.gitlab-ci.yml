@@ -47,6 +47,4 @@ publish traebeler image:
     - robo publish-image
   rules:
     - changes:
-      - internal/**
-      - build/Dockerfile
       - build/version
