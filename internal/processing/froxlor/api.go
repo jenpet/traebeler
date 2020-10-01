@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 const froxlorAPIPath = "/froxlor/api.php"
@@ -44,7 +45,7 @@ func (fa froxlorApi) post(content requestBodyContent, responseBody froxlorBody) 
 	if err != nil {
 		return err
 	}
-	uri := fmt.Sprintf("%s%s", fa.uri, froxlorAPIPath)
+	uri := createURI(fa.uri, froxlorAPIPath)
 	resp, err := fa.action(uri, "application/json", bytes.NewBuffer(b))
 	if err != nil {
 		return err
@@ -71,6 +72,14 @@ func (fa froxlorApi) post(content requestBodyContent, responseBody froxlorBody) 
 		return fmt.Errorf("froxlor API returned no body http status code %d", resp.StatusCode)
 	}
 	return nil
+}
+
+func createURI(baseURI, apiPath string) string {
+	uri := baseURI
+	if strings.HasSuffix(uri, "/") {
+		uri = uri[:len(uri)-1]
+	}
+	return uri + apiPath
 }
 
 type requestBody struct {

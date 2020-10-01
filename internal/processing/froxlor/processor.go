@@ -116,16 +116,11 @@ func updateRecord(repo recordRepo, rec record, ip string) (record, error) {
 	return rec, nil
 }
 
-
+// ID returns the identifier for the froxlor processor
 func (p *Processor) ID() string {
 	return "froxlor"
 }
 
-
-// Cache stuff
-// Remove all entries from cache which are not in the domain update
-// Get new IP and check with existing entries, get list of diffing IPs / entries and missing entries
-// Check which domains are in the cache
 func (p *Processor) Init() error {
 	err := envconfig.Process("traebeler_processor_froxlor", &p.cfg)
 	if err != nil {
@@ -171,7 +166,6 @@ func (p *Processor) refreshCache(domains []string, ip string) ([]record, error) 
 	p.cache = cleanedCache
 	return updateRequired, nil
 }
-
 
 func domainToRecord(domain string) (*record, error) {
 	tld := domainutil.Domain(domain)

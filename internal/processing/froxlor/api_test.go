@@ -132,6 +132,28 @@ func TestAdd_shouldReturnErrorInCaseFailed(t *testing.T) {
 	}
 }
 
+func TestCreateURI_whenURIHasTrailingSlash_shouldTrim(t *testing.T) {
+	uriTests := []struct{
+		name string
+		baseUri string
+	}{
+		{
+			"has slash suffix",
+			"https://froxlor.com/",
+		},
+		{
+			"does not have a slash suffix",
+			"https://froxlor.com",
+		},
+	}
+
+	for _, tt := range uriTests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, "https://froxlor.com/froxlor/api.php", createURI(tt.baseUri, froxlorAPIPath), "created froxlor URI is invalid")
+		})
+	}
+}
+
 type mockFroxlor struct {
 	requests []actionRequest
 	responses []actionResponse
