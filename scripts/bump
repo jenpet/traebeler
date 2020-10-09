@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ -z ${CURRENT_VERSION} ]; then
-  echo "Missing 'CURENT_VERSION' parameter.";
+  echo "Missing 'CURRENT_VERSION' parameter.";
   exit 1;
 fi;
 
@@ -9,8 +9,7 @@ semver_bump() {
   IFS='.' read -ra SLUGS <<< "${CURRENT_VERSION}"
   # bump the requested position and set the following ones to zero (0)
   ((SLUGS[${SLUG}]++))
-  for I in "${SLUGS[@]}"
-  do
+  for I in "${!SLUGS[@]}"; do
     if [ "${I}" -gt "${SLUG}" ]; then
         SLUGS[${I}]=0
     fi
