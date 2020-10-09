@@ -2,7 +2,8 @@ build:
   summary: builds traebeler and puts the binary
   command: |
     cd {{ .codeDir }}
-    go build -o {{ .robo.path }}/{{ .binary }} ./cmd/traebeler
+    GOARCH=amd64 GOOS=${1:-darwin} CGO_ENABLED=0 go build -ldflags='-w -s -extldflags "-static"' -a \
+          -o {{ .robo.path }}/{{ .binary }} ./cmd/traebeler
 
 test:
   summary: runs all tests with coverage
