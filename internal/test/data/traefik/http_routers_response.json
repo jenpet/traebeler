@@ -1,0 +1,26 @@
+[
+  {
+    "entryPoints": [
+      "websecure"
+    ],
+    "service": "disabledservice",
+    "rule": "Host(`disabeld.foo.bar`)",
+    "status": "disabled",
+    "using": [
+      "websecure"
+    ],
+    "name": "web@disabled"
+  },
+  {
+    "entryPoints": [
+      "websecure"
+    ],
+    "service": "web",
+    "rule": "Host(`foo.bar`)",
+    "status": "enabled",
+    "using": [
+      "websecure"
+    ],
+    "name": "web@foo"
+  }
+]

@@ -1,21 +1,24 @@
 build:
   summary: builds traebeler and puts the binary
   command: |
-    cd {{ .codeDir }}
     GOARCH=amd64 GOOS=${1:-darwin} CGO_ENABLED=0 go build -ldflags='-w -s -extldflags "-static"' -a \
           -o {{ .robo.path }}/{{ .binary }} ./cmd/traebeler
 
 test:
   summary: runs all tests with coverage
   command: |
-    cd {{ .codeDir }}
-    go test ./... -cover
+    go test -cover $(go list ./... | grep -v /test | grep -v /cmd)
 
 run:
   summary: first builds then runs traebeler
   command: |
+    if [ -f "${VARS}" ]; then
+        source ${VARS}
+    fi
     robo -c {{ .robo.file }} build && \
     ./{{ .binary }}
+  env:
+    - VARS={{ .robo.path }}/.env
 
 image:
   summary: builds a docker image
@@ -44,11 +47,9 @@ release:
     - VERSION_FILE={{ .versionFile }}
     - TAG_MESSAGE=TRAEBELER release
 
-
 variables:
   project: github.com/jenpet/traebeler
   image: jenpet/traebeler
   binary: build/dist/traebeler
-  codeDir: ./internal
   version: $(cat {{ .versionFile }})
   versionFile: build/version

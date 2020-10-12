@@ -5,7 +5,6 @@ import "time"
 // clock is used to have a configuredClock based ticker channel and a possibility to stop it.
 type clock interface {
 	Ticker() <-chan time.Time
-	Stop()
 }
 
 // provider provides a list of domains which can be used for processing.
@@ -26,10 +25,6 @@ type realClock struct {
 
 func (rt *realClock) Ticker() <- chan time.Time {
 	return rt.ticker.C
-}
-
-func (rt *realClock) Stop() {
-	rt.ticker.Stop()
 }
 
 // config holds the general configuration for the overall application relying on "github.com/kelseyhightower/envconfig"

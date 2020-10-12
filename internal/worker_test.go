@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"github.com/jenpet/traebeler/internal/test"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -32,11 +33,28 @@ func TestProcessDomainsOnTrigger_whenClockFires_shouldQueryDomainsAndTriggerProc
 	}
 }
 
+func TestLoadConfig_whenEnvVarsAreInvalid_shouldPanic(t *testing.T) {
+	configTests := []struct {
+		name string
+		vars map[string]string
+	}{
+		{"invalid interval value", map[string]string{"TRAEBELER_LOOKUP_INTERVAL":"1-.2"}},
+		{"interval leq zero", map[string]string{"TRAEBELER_LOOKUP_INTERVAL": "0"}},
+	}
+
+	for _, tt := range configTests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer test.ClearEnvs(test.SetEnvs(tt.vars))
+			assert.Panics(t, func() {
+				loadConfig()
+			}, "invalid env vars should cause the worker to panic")
+		})
+	}
+}
+
 type mockClock struct {
 	tickerChan chan time.Time
 }
-
-func (tc *mockClock) Stop() {}
 
 func (tc *mockClock) Ticker() <-chan time.Time {
 	if tc.tickerChan == nil {

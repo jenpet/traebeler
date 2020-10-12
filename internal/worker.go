@@ -2,18 +2,14 @@ package internal
 
 import (
 	"context"
-	"github.com/jenpet/traebeler/processing"
-	"github.com/jenpet/traebeler/traefik"
+	"github.com/jenpet/traebeler/internal/log"
+	"github.com/jenpet/traebeler/internal/processing"
+	"github.com/jenpet/traebeler/internal/traefik"
 	"github.com/kelseyhightower/envconfig"
-	log "github.com/sirupsen/logrus"
-	"os"
-	"os/signal"
 )
 
 // Do will be called from main as an entrypoint.
-func Do() {
-	ctx, cancel := context.WithCancel(context.Background())
-	listenCancel(cancel)
+func Do(ctx context.Context) {
 	perform(ctx)
 }
 
@@ -24,17 +20,6 @@ func perform(ctx context.Context) {
 	provider := traefik.Provider()
 	timer := configuredClock(cfg)
 	workDomains(ctx, processor, provider, timer)
-}
-
-// listenCancel handles a graceful shutdown in case the os receives a cancel signal
-func listenCancel(cancel context.CancelFunc) {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-	go func() {
-		osSignal := <-c
-		log.Printf("Received os signal '%+v'", osSignal)
-		cancel()
-	}()
 }
 
 // workDomains initially queries traefik for a first set of domains. The retrieved domains are passed to the
@@ -65,9 +50,6 @@ func processDomains(provider provider, processor processor) {
 	log.Infof("Done querying for domains. Received %v unique domains.", len(domains))
 	processor.Process(domains)
 }
-
-
-
 
 func loadConfig() config {
 	var cfg config

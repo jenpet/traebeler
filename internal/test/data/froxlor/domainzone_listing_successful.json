@@ -1,0 +1,18 @@
+{
+  "status": 200,
+  "status_message": "successful",
+  "data": {
+    "count": 1,
+    "list": [
+      {
+        "id": "201784",
+        "domain_id": "96",
+        "record": "@",
+        "type": "A",
+        "content": "127.0.0.2",
+        "ttl": "18000",
+        "prio": "0"
+      }
+    ]
+  }
+}

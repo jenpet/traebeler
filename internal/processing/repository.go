@@ -1,7 +1,7 @@
 package processing
 
 import (
-	"github.com/jenpet/traebeler/processing/froxlor"
+	"github.com/jenpet/traebeler/internal/processing/froxlor"
 )
 
 type processor interface {

@@ -8,6 +8,8 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.5.1
+	gopkg.in/h2non/gock.v1 v1.0.15
+	gotest.tools v2.2.0+incompatible
 )
 
 // From traefik

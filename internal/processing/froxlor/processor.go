@@ -3,8 +3,8 @@ package froxlor
 import (
 	"fmt"
 	"github.com/bobesa/go-domain-util/domainutil"
+	"github.com/jenpet/traebeler/internal/log"
 	"github.com/kelseyhightower/envconfig"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 	"sync"
 )
