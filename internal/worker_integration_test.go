@@ -46,6 +46,7 @@ func TestIntegrationFroxlorProcessor_shouldQueryTraefikAndUpdateFroxlor(t *testi
 
 	gockFroxlor("DomainZones.listing", "test/data/froxlor/domainzone_listing_successful.json")
 	gockFroxlor("DomainZones.delete", "test/data/froxlor/domainzone_delete_success.json")
+	gockFroxlor("SubDomains.listing", "test/data/froxlor/subdomain_listing_successful.json")
 	froxlorAdd := gockFroxlor("DomainZones.Add", "test/data/froxlor/domainzone_add_success.json")
 
 	done := make(chan bool)
@@ -71,7 +72,7 @@ func TestIntegrationFroxlorProcessor_shouldQueryTraefikAndUpdateFroxlor(t *testi
 			case <-done:
 				cancel()
 				return
-			case <-time.After(time.Second*3):
+			case <-time.After(time.Second*30):
 				cancel()
 				assert.Fail(t, "integration test timed out")
 		}
@@ -80,7 +81,9 @@ func TestIntegrationFroxlorProcessor_shouldQueryTraefikAndUpdateFroxlor(t *testi
 
 func filterFroxlorCommand(command string) gock.FilterRequestFunc {
 	return func(request *http.Request) bool {
-		b, _ := ioutil.ReadAll(request.Body)
+		// body is read multiple times by the different matchers. GetBody does not clear the body byte array.
+		reqBody, _ := request.GetBody()
+		b, _ := ioutil.ReadAll(reqBody)
 		var body struct{
 			Header map[string]string `json:"header"`
 			Body map[string]interface {

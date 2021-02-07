@@ -55,7 +55,7 @@ func TestFind_shouldCallAndReturnListOfZones(t *testing.T) {
 		mf.reset()
 		tt.mocks()
 		t.Run(tt.name, func(t *testing.T) {
-			zones, err := api.find("foo.bar", "@")
+			zones, err := api.findDomainZones("foo.bar", "@")
 			assert.Equal(t, tt.errorExpected, err != nil, "expected error to be '%v' but was '%v'", tt.errorExpected, err != nil)
 			if !tt.errorExpected {
 				assert.Len(t, zones, len(tt.expectedZones))
@@ -74,17 +74,17 @@ func TestDelete_shouldReturnErrorInCaseFailed(t *testing.T) {
 		errorExpected bool
 	}{
 		{
-			name: "delete not modified response",
+			name: "deleteDomainZone not modified response",
 			mocks: func() {mf.mockResponse(http.StatusNotModified, "", nil) },
 			errorExpected: false,
 		},
 		{
-			name: "delete success response",
+			name: "deleteDomainZone success response",
 			mocks: func() {mf.mockResponse(http.StatusOK, "domainzone_delete_success.json", nil) },
 			errorExpected: false,
 		},
 		{
-			name: "delete internal server error",
+			name: "deleteDomainZone internal server error",
 			mocks: func() {mf.mockResponse(http.StatusInternalServerError, "", errors.New("error")) },
 			errorExpected: true,
 		},
@@ -94,7 +94,7 @@ func TestDelete_shouldReturnErrorInCaseFailed(t *testing.T) {
 		mf.reset()
 		tt.mocks()
 		t.Run(tt.name, func(t *testing.T) {
-			err := api.delete("foo.bar", "id")
+			err := api.deleteDomainZone("foo.bar", "id")
 			assert.Equal(t, tt.errorExpected, err != nil, "expected error to be '%v' but was '%v'", tt.errorExpected, err)
 		})
 	}
@@ -107,17 +107,17 @@ func TestAdd_shouldReturnErrorInCaseFailed(t *testing.T) {
 		errorExpected bool
 	}{
 		{
-			name: "add zone success",
+			name: "addDomainZone zone success",
 			mocks: func() {mf.mockResponse(http.StatusOK, "domainzone_add_success.json", nil) },
 			errorExpected: false,
 		},
 		{
-			name: "add existing zone error",
+			name: "addDomainZone existing zone error",
 			mocks: func() {mf.mockResponse(http.StatusInternalServerError, "domainzone_add_existing_error.json", nil) },
 			errorExpected: true,
 		},
 		{
-			name: "add none existing domain",
+			name: "addDomainZone none existing domain",
 			mocks: func() {mf.mockResponse(http.StatusInternalServerError, "domainzone_add_missing_domain.json", nil) },
 			errorExpected: true,
 		},
@@ -126,7 +126,7 @@ func TestAdd_shouldReturnErrorInCaseFailed(t *testing.T) {
 		mf.reset()
 		tt.mocks()
 		t.Run(tt.name, func(t *testing.T) {
-			err := api.add("foo.bar", "record", "127.0.0.1", "18000", "A")
+			err := api.addDomainZone("foo.bar", "record", "127.0.0.1", "18000", "A")
 			assert.Equal(t, tt.errorExpected, err != nil, "expected error to be '%v' but was '%v'", tt.errorExpected, err)
 		})
 	}

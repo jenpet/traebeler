@@ -1,0 +1,12 @@
+{
+  "status": 200,
+  "status_message": "successful",
+  "data": {
+    "count": 1,
+    "list": [
+      {
+        "id": "not-parsed-anyway"
+      }
+    ]
+  }
+}

@@ -17,20 +17,31 @@ type froxlorApi struct {
 	action apiAction
 }
 
-func (fa froxlorApi) find(domain, record string) ([]zone, error) {
+func (fa froxlorApi) findDomainZones(domain, record string) ([]zone, error) {
 	body := zoneListBody{}
 	err := fa.post(createFindBodyContent(domain, record), &body)
 	return body.Data.List, err
 }
 
-func (fa froxlorApi) delete(domain, entryID string) error {
+func (fa froxlorApi) deleteDomainZone(domain, entryID string) error {
 	body := responseBody{}
 	return fa.post(createDeleteBodyContent(domain, entryID), &body)
 }
 
-func (fa froxlorApi) add(domain, record, content, ttl, rtype string) error {
+func (fa froxlorApi) addDomainZone(domain, record, content, ttl, rtype string) error {
 	body := responseBody{}
 	return fa.post(createAddBodyContent(domain, record, content, ttl, rtype), &body)
+}
+
+func (fa froxlorApi) domainExists(fqn string) (bool, error) {
+	body := listBody{}
+	err := fa.post(createFindSubDomainBodyContent(fqn), &body)
+	return body.Data.Count > 0, err
+}
+
+func (fa froxlorApi) addDomain(domain, subdomain string) error {
+	body := responseBody{}
+	return fa.post(createAddSubDomainContent(domain, subdomain), &body)
 }
 
 func (fa froxlorApi) post(content requestBodyContent, responseBody froxlorBody) error {
@@ -141,6 +152,32 @@ func createAddBodyContent(domain, record, content, ttl, rtype string) requestBod
 	}
 }
 
+func createFindSubDomainBodyContent(fqn string) requestBodyContent {
+	return requestBodyContent{
+		Command: "SubDomains.listing",
+		Params:  map[string]interface{}{
+			"sql_search": map[string]interface{}{
+				// a sql join is done internally by froxlor so querying in a sql search requires a prefix due to arbitrary columns
+				// Found out by actually reading the PHP code...
+				"d.domain": map[string]string{
+					"op": "=",
+					"value": fqn,
+				},
+			},
+		},
+	}
+}
+
+func createAddSubDomainContent(domain, subdomain string) requestBodyContent {
+	return requestBodyContent{
+		Command: "SubDomains.add",
+		Params:  map[string]interface{}{
+			"domain": domain,
+			"subdomain": subdomain,
+		},
+	}
+}
+
 type froxlorBody interface {
 	statusCode() int
 	statusMessage() string
@@ -164,6 +201,13 @@ type zoneListBody struct {
 	Data struct{
 		Count int `json:"count"`
 		List []zone `json:"list"`
+	} `json:"data"`
+}
+
+type listBody struct {
+	responseBody
+	Data struct {
+		Count int `json:"count"`
 	} `json:"data"`
 }
 

@@ -4,7 +4,7 @@
       "websecure"
     ],
     "service": "disabledservice",
-    "rule": "Host(`disabeld.foo.bar`)",
+    "rule": "Host(`disabled.foo.bar`)",
     "status": "disabled",
     "using": [
       "websecure"
