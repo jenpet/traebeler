@@ -3,10 +3,10 @@ package traefik
 import (
 	"encoding/json"
 	"fmt"
-	traefik "github.com/containous/traefik/v2/pkg/config/runtime"
-	"github.com/containous/traefik/v2/pkg/rules"
 	"github.com/jenpet/traebeler/internal/log"
 	"github.com/kelseyhightower/envconfig"
+	traefik "github.com/traefik/traefik/v2/pkg/config/runtime"
+	"github.com/traefik/traefik/v2/pkg/rules"
 	"io/ioutil"
 	"net/http"
 	"strings"

@@ -3,9 +3,9 @@ package traefik
 import (
 	"errors"
 	"fmt"
-	"github.com/containous/traefik/v2/pkg/config/dynamic"
-	traefik "github.com/containous/traefik/v2/pkg/config/runtime"
 	"github.com/stretchr/testify/assert"
+	"github.com/traefik/traefik/v2/pkg/config/dynamic"
+	traefik "github.com/traefik/traefik/v2/pkg/config/runtime"
 	"strings"
 	"testing"
 )
@@ -36,8 +36,27 @@ func TestExtractEffectiveDomains_shouldReturnListWithoutDuplicates(t *testing.T)
 	assert.Contains(t, domains, "ww.lospolloshermanos.com")
 }
 
+func TestExtractEffectiveDomains_shouldAlsoWorkWithComplexRules(t *testing.T) {
+	var tests = []struct {
+		name       string
+		rule       string
+		expDomains []string
+	}{
+		{
+			"Host rule with exclamation mark",
+			"Host(`lospolloshermanos.com`) && PathPrefix(`/`) && !PathPrefix(`/api`)",
+			[]string{"lospolloshermanos.com"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.expDomains, extractEffectiveDomains([]string{tt.rule}))
+		})
+	}
+}
+
 func createTestProvider() testProvider {
-	return testProvider {
+	return testProvider{
 		routerList: []traefik.RouterInfo{
 			createTestRouterInfo(traefik.StatusDisabled, []string{}, []string{"veridian-dynamics.com"}),
 			createTestRouterInfo(traefik.StatusWarning, []string{"error1"}, []string{"dundermifflinpaper.com"}),
@@ -48,10 +67,10 @@ func createTestProvider() testProvider {
 }
 
 func createTestRouterInfo(status string, err []string, hosts []string) traefik.RouterInfo {
-	return traefik.RouterInfo {
+	return traefik.RouterInfo{
 		Router: &dynamic.Router{
-			Service:     "default-service",
-			Rule:        createTestHostRule(hosts...),
+			Service: "default-service",
+			Rule:    createTestHostRule(hosts...),
 		},
 		Err:    err,
 		Status: status,
@@ -67,7 +86,7 @@ func createTestHostRule(hosts ...string) string {
 
 type testProvider struct {
 	routerList []traefik.RouterInfo
-	err error
+	err        error
 }
 
 func (tp testProvider) list() ([]traefik.RouterInfo, error) {
