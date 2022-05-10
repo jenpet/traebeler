@@ -11,11 +11,7 @@ RUN update-ca-certificates \
 
 WORKDIR /traebeler
 
-COPY robo.yml .
-COPY go.mod .
-COPY cmd/ cmd/
-COPY internal/ internal/
-COPY build/version build/version
+COPY . .
 
 RUN robo build linux
 

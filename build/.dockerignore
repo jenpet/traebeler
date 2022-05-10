@@ -1,0 +1,10 @@
+.DS_Store
+.idea/
+
+build/dist/
+build/ci/
+scripts/
+
+*.env
+LICENSE
+README.md
